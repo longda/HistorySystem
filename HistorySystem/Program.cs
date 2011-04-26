@@ -37,6 +37,10 @@ namespace HistorySystem
                         Test();
                         break;
 
+                    case "cmd":
+                        Command();
+                        break;
+
                     case "hist":
                         Interactive();
                         break;
@@ -62,11 +66,101 @@ namespace HistorySystem
             Console.WriteLine("help - display this help documentation");
             Console.WriteLine("test - execute basic test of the history system");
             Console.WriteLine("hist - execute interactive mode of the history system");
+            Console.WriteLine("cmd  - execute the command-based interactive mode using a specialized command history system");
             Console.WriteLine("clear - clear the screen");
 
             Console.WriteLine("");
             Console.WriteLine("");
             Console.WriteLine("");
+        }
+
+        private static void Command()
+        {
+            CommandHistory commandHistory = new CommandHistory();
+            bool interactiveMode = true;
+            string input = string.Empty;
+
+            Console.WriteLine("");
+
+            while (interactiveMode)
+            {
+                Console.Write("cmd> ");
+                input = Console.ReadLine();
+
+                switch (input.ToLower())
+                {
+                    case "exit":
+                        interactiveMode = false;
+                        Console.WriteLine("cmd> Exiting cmd program... Thanks for playing!");
+                        Console.WriteLine("");
+                        Console.WriteLine("");
+                        Console.WriteLine("");
+                        break;
+
+                    case "help":
+                        Console.WriteLine("cmd> Commands:");
+                        Console.WriteLine("cmd> exit   - exit the cmd program");
+                        Console.WriteLine("cmd> help   - display this help text");
+                        Console.WriteLine("cmd> type   - add type command with specified argument to the command history at the next prompt");
+                        Console.WriteLine("cmd> delete - add delete command with specified argument to the command history at the next prompt");
+                        Console.WriteLine("cmd> undo   - undo the last input from the command history");
+                        Console.WriteLine("cmd> redo   - redo the last input from the command history");
+                        break;
+
+                    case "type":
+                        Console.WriteLine("cmd> Enter character to type:");
+                        Console.Write("cmd> ");
+
+                        input = Console.ReadLine();
+                        Console.WriteLine("cmd> Typing character [{0}]...", input.First<char>());
+                        List<object> args1 = new List<object>();
+                        args1.Add(input.First<char>());
+                        commandHistory.AddItemToHistory(new Command() { Arguments = args1, CommandType = CommandType.TypeCharacter, UndoCommandType = CommandType.DeleteCharacter });
+                        break;
+
+                    case "delete":
+                        Console.WriteLine("cmd> Enter character to delete:");
+                        Console.Write("cmd> ");
+
+                        input = Console.ReadLine();
+                        Console.WriteLine("cmd> Deleting character [{0}]...", input.First<char>());
+                        List<object> args2 = new List<object>();
+                        args2.Add(input.First<char>());
+                        commandHistory.AddItemToHistory(new Command() { Arguments = args2, CommandType = CommandType.DeleteCharacter, UndoCommandType = CommandType.TypeCharacter });
+                        break;
+
+                    case "undo":
+                        Command undo = commandHistory.Undo();
+
+                        if (undo != null)
+                        {
+                            Console.WriteLine("cmd> Undoing command [{0}] by executing command [{1}] with parameters [{2}]...", CommandTypeHelper.ToString(undo.CommandType), CommandTypeHelper.ToString(undo.UndoCommandType), string.Join(",", undo.Arguments.Select(a => a.ToString()).ToArray()));
+                        }
+                        else
+                        {
+                            Console.WriteLine("cmd> Nothing to undo...");
+                        }
+                        break;
+
+                    case "redo":
+                        Command redo = commandHistory.Redo();
+
+                        if (redo != null)
+                        {
+                            Console.WriteLine("cmd> Redoing command [{0}] by executing command [{1}] with parameters [{2}]...", CommandTypeHelper.ToString(redo.CommandType), CommandTypeHelper.ToString(redo.UndoCommandType), string.Join(",", redo.Arguments.Select(a => a.ToString()).ToArray()));
+                        }
+                        else
+                        {
+                            Console.WriteLine("cmd> Nothing to redo...");
+                        }
+                        break;
+
+                    default:
+                        Console.Beep();
+                        Console.WriteLine("cmd> Command not recognized...  Please try again.");
+                        break;
+                }
+            }
         }
 
         private static void Interactive()

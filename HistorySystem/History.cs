@@ -8,8 +8,8 @@ namespace HistorySystem
     public class History<T>
     {
         // Fields/Properties
-        private Stack<T> undo = new Stack<T>();
-        private Stack<T> redo = new Stack<T>();
+        protected Stack<T> undo = new Stack<T>();
+        protected Stack<T> redo = new Stack<T>();
 
         /// <summary>
         /// This is the item that will be returned when nothing exists in the history.  Typically this would be null but could be something like -1.
@@ -27,7 +27,7 @@ namespace HistorySystem
         }
 
         // Methods
-        public void AddItemToHistory(T input)
+        public virtual void AddItemToHistory(T input)
         {
             undo.Push(input);
             redo = new Stack<T>();
@@ -37,7 +37,7 @@ namespace HistorySystem
         /// Undo the last item from history.
         /// </summary>
         /// <returns></returns>
-        public T Undo()
+        public virtual T Undo()
         {
             if (undo.Count > 0)
             {
@@ -57,7 +57,7 @@ namespace HistorySystem
         /// Redo the last item that was undone from history.
         /// </summary>
         /// <returns></returns>
-        public T Redo()
+        public virtual T Redo()
         {
             if (redo.Count > 0)
             {
@@ -76,7 +76,7 @@ namespace HistorySystem
         /// <summary>
         /// Reset the history contents.
         /// </summary>
-        public void Clear()
+        public virtual void Clear()
         {
             undo = new Stack<T>();
             redo = new Stack<T>();
