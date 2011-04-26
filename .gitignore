@@ -1,0 +1,6 @@
+PrecompiledWeb/
+*.suo
+*.user
+*/bin/
+*/obj/
+*.dbmdl
